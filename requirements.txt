@@ -1,2 +1,5 @@
-# UmaTurniej - Screenshot Processing and OCR Application
-# Dependencies will be added as the project develops
+# UmaTurniej - Screenshot Processing Application
+# Dependencies for screenshot snippet extraction
+
+# Image processing
+Pillow>=10.0.0
