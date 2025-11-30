@@ -1,34 +1,25 @@
 #!/usr/bin/env python3
 """
 Screenshot Processing Script for UmaTurniej
-Processes race screenshots to extract race standings using OCR.
+Subdivides race screenshots into smaller image snippets for later OCR processing.
 
 This script:
-1. Loads all .png images from the /screenshots directory
-2. Crops off the right half (keeping only the left half with race standings)
-3. Uses OCR (pytesseract) to extract placement, character name, and user name
-4. Outputs results to screenshots/race_results.txt
+1. Loads all image files (JPG/PNG) from the project root directory
+2. For each screenshot, extracts 7 individual race entry snippets
+3. Saves the snippets to the /screenshots/cropped directory
 """
 
-import re
-import traceback
 from pathlib import Path
 
-import cv2
-import numpy as np
-import pytesseract
 from PIL import Image
 
-# OCR Configuration Constants
-# oem=3: Default OCR Engine Mode (LSTM neural network)
-# psm=6: Assume a single uniform block of text
-OCR_CONFIG = r"--oem 3 --psm 6"
-
-# Image preprocessing constants
-DENOISE_FILTER_STRENGTH = 10
-DENOISE_TEMPLATE_WINDOW_SIZE = 7
-DENOISE_SEARCH_WINDOW_SIZE = 21
-OCR_SCALE_FACTOR = 2
+# Race entry region coordinates (for 1716x965 resolution screenshots)
+ENTRY_LEFT = 215       # Left edge of entry boxes
+ENTRY_RIGHT = 625      # Right edge of entry boxes
+ENTRY_START_Y = 68     # Y position of first entry
+ENTRY_HEIGHT = 105     # Height of each entry box
+ENTRY_GAP = 3          # Gap between entries
+NUM_ENTRIES = 7        # Number of visible entries per screenshot
 
 
 def get_project_root() -> Path:
@@ -36,280 +27,113 @@ def get_project_root() -> Path:
     return Path(__file__).parent.parent
 
 
-def load_screenshots(screenshots_dir: Path) -> list[Path]:
+def load_screenshots(project_root: Path) -> list[Path]:
     """
-    Load all PNG images from the screenshots directory.
+    Load all image files (PNG and JPG) from the project root directory.
 
     Args:
-        screenshots_dir: Path to the screenshots directory
+        project_root: Path to the project root directory
 
     Returns:
-        List of paths to PNG files
+        List of paths to image files
     """
-    png_files = list(screenshots_dir.glob("*.png"))
-    # Exclude cropped directory files
-    png_files = [f for f in png_files if "cropped" not in str(f)]
-    return sorted(png_files)
+    image_files = []
+    for pattern in ["*.png", "*.jpg", "*.jpeg"]:
+        image_files.extend(project_root.glob(pattern))
+    # Exclude any files in subdirectories
+    image_files = [f for f in image_files if f.parent == project_root]
+    return sorted(image_files)
 
 
-def crop_left_half(image_path: Path, output_dir: Path) -> Path:
+def extract_entry_snippets(image_path: Path, output_dir: Path) -> list[Path]:
     """
-    Crop the right half off an image, keeping only the left half.
+    Extract individual race entry snippets from a screenshot.
 
     Args:
-        image_path: Path to the source image
-        output_dir: Directory to save the cropped image
+        image_path: Path to the source screenshot
+        output_dir: Directory to save the extracted snippets
 
     Returns:
-        Path to the cropped image
+        List of paths to the extracted snippet images
     """
-    img = cv2.imread(str(image_path))
-    if img is None:
-        raise ValueError(f"Could not load image: {image_path}")
+    img = Image.open(image_path)
+    width, height = img.size
 
-    height, width = img.shape[:2]
-    left_half = img[:, : width // 2]
-
-    output_path = output_dir / f"{image_path.stem}_cropped.png"
-    cv2.imwrite(str(output_path), left_half)
-    return output_path
-
-
-def preprocess_image_for_ocr(image_path: Path) -> np.ndarray:
-    """
-    Preprocess an image for better OCR results.
-
-    Args:
-        image_path: Path to the image
-
-    Returns:
-        Preprocessed image as numpy array
-    """
-    img = cv2.imread(str(image_path))
-    if img is None:
-        raise ValueError(f"Could not load image: {image_path}")
-
-    # Convert to grayscale
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    # Apply threshold to get binary image
-    _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-    # Denoise
-    denoised = cv2.fastNlMeansDenoising(
-        binary, None,
-        DENOISE_FILTER_STRENGTH,
-        DENOISE_TEMPLATE_WINDOW_SIZE,
-        DENOISE_SEARCH_WINDOW_SIZE
-    )
-
-    # Scale up for better OCR
-    scaled = cv2.resize(
-        denoised, None, fx=OCR_SCALE_FACTOR, fy=OCR_SCALE_FACTOR,
-        interpolation=cv2.INTER_CUBIC
-    )
-
-    return scaled
-
-
-def extract_race_positions(image_path: Path) -> list[dict]:
-    """
-    Extract race positions from a cropped screenshot using OCR.
-
-    Args:
-        image_path: Path to the cropped image
-
-    Returns:
-        List of dictionaries with placement, character_name, and user_name
-    """
-    preprocessed = preprocess_image_for_ocr(image_path)
-
-    # Convert to PIL Image for pytesseract
-    pil_image = Image.fromarray(preprocessed)
-
-    # Perform OCR with custom config for better results
-    text = pytesseract.image_to_string(pil_image, config=OCR_CONFIG)
-
-    results = parse_ocr_text(text)
-    return results
-
-
-def parse_ocr_text(text: str) -> list[dict]:
-    """
-    Parse OCR text to extract race positions.
-
-    The expected format is lines like:
-    "1st Maruzensky Kysix"
-    "2nd Haru Urara Sebaxd321"
-    etc.
-
-    Args:
-        text: Raw OCR text
-
-    Returns:
-        List of dictionaries with placement, character_name, and user_name
-    """
-    results = []
-    lines = text.strip().split("\n")
-
-    # Pattern to match placement numbers (1st, 2nd, 3rd, etc. or just numbers)
-    placement_pattern = re.compile(r"^(\d+)(?:st|nd|rd|th)?[\.\s:]?\s*(.+)", re.IGNORECASE)
-
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-
-        match = placement_pattern.match(line)
-        if match:
-            placement = int(match.group(1))
-            rest = match.group(2).strip()
-
-            # Try to split the rest into character name and user name
-            # This is heuristic - typically character name comes first, then user name
-            parts = rest.split()
-            if len(parts) >= 2:
-                # Assume last part is user name, rest is character name
-                user_name = parts[-1]
-                character_name = " ".join(parts[:-1])
-            elif len(parts) == 1:
-                character_name = parts[0]
-                user_name = "Unknown"
-            else:
-                continue
-
-            results.append(
-                {
-                    "placement": placement,
-                    "character_name": character_name,
-                    "user_name": user_name,
-                }
-            )
-
-    # Sort by placement
-    results.sort(key=lambda x: x["placement"])
-    return results
-
-
-def format_placement(placement: int) -> str:
-    """
-    Format a placement number with ordinal suffix.
-
-    Args:
-        placement: The placement number
-
-    Returns:
-        Formatted string like "1st", "2nd", "3rd", etc.
-    """
-    if 11 <= placement <= 13:
-        suffix = "th"
+    # Scale coordinates if image size differs from expected
+    if width != 1716 or height != 965:
+        print(f"  Warning: Image size {width}x{height} differs from expected 1716x965")
+        scale_x = width / 1716
+        scale_y = height / 965
+        left = int(ENTRY_LEFT * scale_x)
+        right = int(ENTRY_RIGHT * scale_x)
+        start_y = int(ENTRY_START_Y * scale_y)
+        entry_height = int(ENTRY_HEIGHT * scale_y)
+        entry_gap = int(ENTRY_GAP * scale_y)
     else:
-        suffix = {1: "st", 2: "nd", 3: "rd"}.get(placement % 10, "th")
-    return f"{placement}{suffix}"
+        left = ENTRY_LEFT
+        right = ENTRY_RIGHT
+        start_y = ENTRY_START_Y
+        entry_height = ENTRY_HEIGHT
+        entry_gap = ENTRY_GAP
 
+    extracted_paths = []
 
-def write_results(
-    results: dict[str, list[dict]], output_path: Path
-) -> None:
-    """
-    Write extracted race results to a text file.
+    for i in range(NUM_ENTRIES):
+        top = start_y + i * (entry_height + entry_gap)
+        bottom = top + entry_height
 
-    Args:
-        results: Dictionary mapping image names to lists of race positions
-        output_path: Path to the output file
-    """
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write("=" * 60 + "\n")
-        f.write("RACE RESULTS - Uma Musume Tournament\n")
-        f.write("=" * 60 + "\n\n")
+        if bottom > height:
+            break
 
-        for image_name, positions in results.items():
-            f.write(f"Race: {image_name}\n")
-            f.write("-" * 40 + "\n")
+        entry_box = (left, top, right, bottom)
+        entry_img = img.crop(entry_box)
 
-            if positions:
-                for pos in positions:
-                    placement_str = format_placement(pos["placement"])
-                    f.write(
-                        f"{placement_str}: {pos['character_name']} - {pos['user_name']}\n"
-                    )
-            else:
-                f.write("No positions extracted (OCR could not parse this image)\n")
+        output_filename = f"{image_path.stem}_entry_{i + 1}.png"
+        output_path = output_dir / output_filename
+        entry_img.save(output_path, "PNG")
+        extracted_paths.append(output_path)
 
-            f.write("\n")
-
-        f.write("=" * 60 + "\n")
-        f.write("End of Results\n")
-        f.write("=" * 60 + "\n")
+    return extracted_paths
 
 
 def main() -> None:
     """Main entry point for the screenshot processing script."""
     project_root = get_project_root()
-    screenshots_dir = project_root / "screenshots"
-    cropped_dir = screenshots_dir / "cropped"
-    output_file = screenshots_dir / "race_results.txt"
+    output_dir = project_root / "screenshots" / "cropped"
 
-    # Ensure directories exist
-    screenshots_dir.mkdir(exist_ok=True)
-    cropped_dir.mkdir(exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    print("UmaTurniej Screenshot Processor")
-    print("=" * 40)
+    print("UmaTurniej Screenshot Snippet Extractor")
+    print("=" * 45)
 
-    # Load screenshots
-    screenshots = load_screenshots(screenshots_dir)
+    screenshots = load_screenshots(project_root)
 
     if not screenshots:
-        print(f"No PNG files found in {screenshots_dir}")
-        print("Please add race screenshots to the screenshots directory.")
+        print(f"No image files found in {project_root}")
         return
 
     print(f"Found {len(screenshots)} screenshot(s) to process")
 
-    all_results = {}
+    total_snippets = 0
 
     for screenshot in screenshots:
         print(f"\nProcessing: {screenshot.name}")
 
         try:
-            # Crop the left half
-            cropped_path = crop_left_half(screenshot, cropped_dir)
-            print(f"  - Cropped image saved to: {cropped_path.name}")
+            snippet_paths = extract_entry_snippets(screenshot, output_dir)
+            print(f"  - Extracted {len(snippet_paths)} snippet(s)")
 
-            # Extract race positions using OCR
-            positions = extract_race_positions(cropped_path)
-            print(f"  - Extracted {len(positions)} position(s)")
+            for path in snippet_paths:
+                print(f"    - {path.name}")
 
-            all_results[screenshot.name] = positions
+            total_snippets += len(snippet_paths)
 
-        except (ValueError, FileNotFoundError) as e:
+        except (ValueError, OSError) as e:
             print(f"  - Error processing {screenshot.name}: {e}")
-            all_results[screenshot.name] = []
-        except pytesseract.TesseractError as e:
-            print(f"  - OCR error processing {screenshot.name}: {e}")
-            all_results[screenshot.name] = []
-        except cv2.error as e:
-            print(f"  - Image processing error for {screenshot.name}: {e}")
-            all_results[screenshot.name] = []
-        except Exception as e:  # noqa: BLE001
-            print(f"  - Unexpected error processing {screenshot.name}: {e}")
-            print(f"    Traceback: {traceback.format_exc()}")
-            all_results[screenshot.name] = []
 
-    # Write results to file
-    write_results(all_results, output_file)
-    print(f"\nResults written to: {output_file}")
-
-    # Print summary to console
-    print("\n" + "=" * 40)
-    print("SUMMARY")
-    print("=" * 40)
-    for image_name, positions in all_results.items():
-        print(f"\n{image_name}:")
-        for pos in positions:
-            placement_str = format_placement(pos["placement"])
-            print(f"  {placement_str}: {pos['character_name']} - {pos['user_name']}")
+    print("\n" + "=" * 45)
+    print(f"COMPLETE: Extracted {total_snippets} total snippets")
+    print(f"Snippets saved to: {output_dir}")
 
 
 if __name__ == "__main__":

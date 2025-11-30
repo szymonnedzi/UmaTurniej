@@ -1,73 +1,45 @@
 # UmaTurniej
 
-Screenshot Processing and OCR Application for Uma Musume Tournament race results.
+Screenshot processing tool for Uma Musume Tournament - subdivides race screenshots into individual entry snippets.
 
 ## Features
 
-- Loads PNG screenshots from the `/screenshots` directory
-- Crops the right half of images (keeping left half with race standings)
-- Uses OCR (pytesseract) to extract race positions, character names, and user names
-- Outputs results to a formatted text file
+- Loads race screenshots (JPG/PNG) from the project root
+- Extracts 7 individual race entry snippets per screenshot
+- Saves snippets to `/screenshots/cropped/` for later OCR processing
 
 ## Installation
 
-1. Install system dependencies:
-   ```bash
-   # Ubuntu/Debian
-   sudo apt-get install tesseract-ocr
-   
-   # macOS
-   brew install tesseract
-   
-   # Windows
-   # Download installer from https://github.com/UB-Mannheim/tesseract/wiki
-   ```
-
-2. Install Python dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+pip install -r requirements.txt
+```
 
 ## Usage
 
-### Processing Screenshots
-
-1. Place your race screenshots (PNG format) in the `/screenshots` directory
+1. Place race screenshots in the project root directory
 2. Run the processing script:
    ```bash
    python scripts/process_screenshots.py
    ```
-3. Results will be saved to `screenshots/race_results.txt`
-4. Cropped images are saved to `screenshots/cropped/`
+3. Extracted snippets will be saved to `screenshots/cropped/`
 
 ## Directory Structure
 
 ```
 UmaTurniej/
+├── *.jpg                      # Source race screenshots
 ├── screenshots/
-│   ├── cropped/           # Cropped images (left half only)
-│   └── race_results.txt   # Extracted race results
+│   └── cropped/               # Extracted entry snippets
 ├── scripts/
-│   └── process_screenshots.py  # Main processing script
+│   └── process_screenshots.py # Main processing script
 ├── requirements.txt
 └── README.md
 ```
 
-## Output Format
+## Output
 
-The output file contains race results in the following format:
-
-```
-Race: screenshot1.png
-----------------------------------------
-1st: CharacterName - UserName
-2nd: CharacterName - UserName
-3rd: CharacterName - UserName
-...
-```
-
-## Notes
-
-- Screenshots should have race standings visible on the left half of the image
-- The script crops the right half and processes only the left portion
-- OCR accuracy depends on image quality and text clarity
+Each source screenshot produces 7 individual entry snippet images:
+- `{screenshot_name}_entry_1.png`
+- `{screenshot_name}_entry_2.png`
+- ...
+- `{screenshot_name}_entry_7.png`
