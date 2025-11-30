@@ -3,3 +3,6 @@
 
 # Image processing
 Pillow>=10.0.0
+
+# OCR-based anchor detection (requires Tesseract-OCR system package)
+pytesseract>=0.3.10
