@@ -1,2 +1,13 @@
 # UmaTurniej - Screenshot Processing and OCR Application
-# Dependencies will be added as the project develops
+# Dependencies for screenshot processing and OCR
+
+# Image processing
+opencv-python>=4.8.0
+Pillow>=10.0.0
+
+# OCR
+pytesseract>=0.3.10
+
+# Core utilities (included with Python 3.9+)
+# pathlib - standard library
+# glob - standard library
