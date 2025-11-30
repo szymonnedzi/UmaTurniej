@@ -11,12 +11,24 @@ This script:
 """
 
 import re
+import traceback
 from pathlib import Path
 
 import cv2
 import numpy as np
 import pytesseract
 from PIL import Image
+
+# OCR Configuration Constants
+# oem=3: Default OCR Engine Mode (LSTM neural network)
+# psm=6: Assume a single uniform block of text
+OCR_CONFIG = r"--oem 3 --psm 6"
+
+# Image preprocessing constants
+DENOISE_FILTER_STRENGTH = 10
+DENOISE_TEMPLATE_WINDOW_SIZE = 7
+DENOISE_SEARCH_WINDOW_SIZE = 21
+OCR_SCALE_FACTOR = 2
 
 
 def get_project_root() -> Path:
@@ -84,12 +96,17 @@ def preprocess_image_for_ocr(image_path: Path) -> np.ndarray:
     _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
     # Denoise
-    denoised = cv2.fastNlMeansDenoising(binary, None, 10, 7, 21)
+    denoised = cv2.fastNlMeansDenoising(
+        binary, None,
+        DENOISE_FILTER_STRENGTH,
+        DENOISE_TEMPLATE_WINDOW_SIZE,
+        DENOISE_SEARCH_WINDOW_SIZE
+    )
 
     # Scale up for better OCR
-    scale_factor = 2
     scaled = cv2.resize(
-        denoised, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_CUBIC
+        denoised, None, fx=OCR_SCALE_FACTOR, fy=OCR_SCALE_FACTOR,
+        interpolation=cv2.INTER_CUBIC
     )
 
     return scaled
@@ -111,8 +128,7 @@ def extract_race_positions(image_path: Path) -> list[dict]:
     pil_image = Image.fromarray(preprocessed)
 
     # Perform OCR with custom config for better results
-    custom_config = r"--oem 3 --psm 6"
-    text = pytesseract.image_to_string(pil_image, config=custom_config)
+    text = pytesseract.image_to_string(pil_image, config=OCR_CONFIG)
 
     results = parse_ocr_text(text)
     return results
@@ -267,8 +283,18 @@ def main() -> None:
 
             all_results[screenshot.name] = positions
 
-        except Exception as e:
+        except (ValueError, FileNotFoundError) as e:
             print(f"  - Error processing {screenshot.name}: {e}")
+            all_results[screenshot.name] = []
+        except pytesseract.TesseractError as e:
+            print(f"  - OCR error processing {screenshot.name}: {e}")
+            all_results[screenshot.name] = []
+        except cv2.error as e:
+            print(f"  - Image processing error for {screenshot.name}: {e}")
+            all_results[screenshot.name] = []
+        except Exception as e:  # noqa: BLE001
+            print(f"  - Unexpected error processing {screenshot.name}: {e}")
+            print(f"    Traceback: {traceback.format_exc()}")
             all_results[screenshot.name] = []
 
     # Write results to file
