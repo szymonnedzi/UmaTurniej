@@ -58,11 +58,15 @@ def detect_anchor_position(img: Image.Image) -> int | None:
     search_region = img.crop(ANCHOR_SEARCH_REGION)
 
     # Run OCR with bounding box data
-    data = pytesseract.image_to_data(search_region, output_type=pytesseract.Output.DICT)
+    # Use PSM 6 (assume a single uniform block of text) for better detection of UI text
+    data = pytesseract.image_to_data(
+        search_region, output_type=pytesseract.Output.DICT, config='--psm 6'
+    )
 
     # Search for the anchor text
     for i, text in enumerate(data['text']):
-        if text.strip() == ANCHOR_TEXT:
+        # Use case-insensitive matching to handle OCR variations
+        if text.strip().lower() == ANCHOR_TEXT.lower():
             # Calculate the bottom Y position of the anchor in original image coordinates
             # Add the search region's top offset to convert to original image coordinates
             anchor_top = data['top'][i] + ANCHOR_SEARCH_REGION[1]
@@ -120,7 +124,9 @@ def extract_entry_snippets(image_path: Path, output_dir: Path) -> list[Path]:
         # Fallback to fixed value with warning
         warnings.warn(
             f"OCR anchor '{ANCHOR_TEXT}' not found in {image_path.name}; "
-            "using fixed ENTRY_START_Y value"
+            "using fixed ENTRY_START_Y value",
+            UserWarning,
+            stacklevel=2
         )
         print(f"  Warning: OCR anchor not found, using fallback y={ENTRY_START_Y}")
         start_y = ENTRY_START_Y
