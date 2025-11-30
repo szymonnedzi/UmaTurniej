@@ -1,0 +1,2 @@
+# UmaTurniej - Screenshot Processing and OCR Application
+# Dependencies will be added as the project develops
