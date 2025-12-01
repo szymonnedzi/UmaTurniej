@@ -6,8 +6,9 @@ Extracts position, character name, and player name from cropped screenshot snipp
 This script:
 1. Loads cropped entry images from /screenshots/cropped/
 2. Uses OCR to extract character and player names
-3. Determines position from the entry number in the filename
-4. Outputs results to a text file
+3. Attempts to detect position (1st, 2nd, 8th, etc.) from the image via OCR
+4. Falls back to entry number from filename if OCR position detection fails
+5. Outputs results to a text file
 """
 
 import re
@@ -57,6 +58,59 @@ def get_ordinal(n: int) -> str:
     return f"{n}{suffix}"
 
 
+def extract_position_from_image(img: Image.Image) -> str | None:
+    """
+    Attempt to extract the position (1st, 2nd, 3rd, etc.) from the left side of the image.
+
+    The position is displayed as a stylized ordinal number on the left side of each
+    race entry snippet.
+
+    Args:
+        img: PIL Image object of the cropped entry
+
+    Returns:
+        Position string (e.g., "8th") if detected, None otherwise
+    """
+    from PIL import ImageOps, ImageEnhance
+
+    # Crop left portion where position is shown (approximately first 150 pixels)
+    left_region = img.crop((0, 0, 150, img.height))
+
+    # Try multiple preprocessing approaches to improve OCR accuracy
+    gray = ImageOps.grayscale(left_region)
+    preprocessing_attempts = [
+        gray,
+        ImageOps.invert(gray),
+        ImageEnhance.Contrast(gray).enhance(2.0),
+    ]
+
+    # Try different PSM modes for position detection
+    psm_modes = [7, 8, 6, 11]
+
+    for attempt_img in preprocessing_attempts:
+        for psm in psm_modes:
+            try:
+                data = pytesseract.image_to_data(
+                    attempt_img,
+                    output_type=pytesseract.Output.DICT,
+                    config=f"--psm {psm}",
+                )
+
+                for word in data["text"]:
+                    word = word.strip().lower()
+                    if not word:
+                        continue
+                    # Check for ordinal patterns (1st, 2nd, 3rd, 4th, etc.)
+                    match = re.match(r"^(\d+)(st|nd|rd|th)$", word)
+                    if match:
+                        num = int(match.group(1))
+                        return get_ordinal(num)
+            except (ValueError, RuntimeError):
+                pass
+
+    return None
+
+
 def extract_text_from_image(image_path: Path) -> dict:
     """
     Extract character and player name from a cropped entry image using OCR.
@@ -68,9 +122,12 @@ def extract_text_from_image(image_path: Path) -> dict:
         image_path: Path to the cropped entry image
 
     Returns:
-        Dictionary with 'character' and 'player' keys
+        Dictionary with 'character', 'player', and 'position' keys
     """
     img = Image.open(image_path)
+
+    # Try to extract position from the left side of the image
+    detected_position = extract_position_from_image(img)
 
     # Get OCR data with bounding boxes
     data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
@@ -161,7 +218,11 @@ def extract_text_from_image(image_path: Path) -> dict:
     player_name = re.sub(r"\s*\([^)]*\)\s*$", "", player_name)
     player_name = re.sub(r"\s*@\s*$", "", player_name)
 
-    return {"character": character_name.strip(), "player": player_name.strip()}
+    return {
+        "character": character_name.strip(),
+        "player": player_name.strip(),
+        "position": detected_position,
+    }
 
 
 def parse_entry_number(filename: str) -> int | None:
@@ -206,11 +267,20 @@ def process_cropped_images(cropped_dir: Path) -> list[dict]:
             print(f"  Warning: Could not parse entry number from {image_path.name}")
             continue
 
-        # Extract text data
+        # Extract text data (including OCR-detected position)
         text_data = extract_text_from_image(image_path)
 
+        # Use OCR-detected position if available, otherwise fall back to entry number
+        position = text_data.get("position")
+        if position is None:
+            position = get_ordinal(entry_num)
+            position_source = "filename"
+        else:
+            position_source = "OCR"
+
         result = {
-            "position": get_ordinal(entry_num),
+            "position": position,
+            "position_source": position_source,
             "character": text_data["character"],
             "player": text_data["player"],
             "source_file": image_path.name,
