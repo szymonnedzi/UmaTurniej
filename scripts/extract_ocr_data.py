@@ -15,7 +15,7 @@ import re
 from pathlib import Path
 
 import pytesseract
-from PIL import Image
+from PIL import Image, ImageEnhance, ImageOps
 
 # Known Uma Musume character names for better matching
 KNOWN_CHARACTERS = [
@@ -71,8 +71,6 @@ def extract_position_from_image(img: Image.Image) -> str | None:
     Returns:
         Position string (e.g., "8th") if detected, None otherwise
     """
-    from PIL import ImageOps, ImageEnhance
-
     # Crop left portion where position is shown (approximately first 150 pixels)
     left_region = img.crop((0, 0, 150, img.height))
 
@@ -84,7 +82,11 @@ def extract_position_from_image(img: Image.Image) -> str | None:
         ImageEnhance.Contrast(gray).enhance(2.0),
     ]
 
-    # Try different PSM modes for position detection
+    # Try different Tesseract Page Segmentation Modes (PSM) for position detection
+    # PSM 7: Treat image as a single text line
+    # PSM 8: Treat image as a single word
+    # PSM 6: Assume a single uniform block of text
+    # PSM 11: Sparse text - find as much text as possible
     psm_modes = [7, 8, 6, 11]
 
     for attempt_img in preprocessing_attempts:
