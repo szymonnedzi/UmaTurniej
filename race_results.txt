@@ -3,33 +3,33 @@ UmaTurniej Race Results - OCR Extraction
 
 Screenshot: 20251130185703_1
 ----------------------------------------
-  1st: Maruzensky - Kysix
-  2nd: Haru - Sebaxd321
-  3rd: [Unknown Character] - El Condor Pasa
-  4th: Smart - Harambe
-  5th: Taiki Shuttle - iStrzalka
+  [Unknown Position]: Maruzensky - Kysix
+  [Unknown Position]: Haru - Sebaxd321
+  [Unknown Position]: [Unknown Character] - El Condor Pasa
+  [Unknown Position]: Smart - Harambe
+  [Unknown Position]: Taiki Shuttle - iStrzalka
   6th: El Condor Pasa - Ayumu
   7th: Smart Falcon - Bloc
 
 Screenshot: 20251130185712_1
 ----------------------------------------
-  1st: Falcon Smart - Bloodvvolf
-  2nd: Taiki Shuttle - FantomSG
-  3rd: Haru Urara - Saachi Gi
-  4th: [Unknown Character] - Shutth
-  5th: [Unknown Character] - Oguri cop
+  [Unknown Position]: Falcon Smart - Bloodvvolf
+  [Unknown Position]: Taiki Shuttle - FantomSG
+  [Unknown Position]: Haru Urara - Saachi Gi
+  [Unknown Position]: [Unknown Character] - Shutth
+  [Unknown Position]: [Unknown Character] - Oguri cop
   12th: Oguri - Archer
-  7th: [Unknown Character] - Haru Urara
+  [Unknown Position]: [Unknown Character] - Haru Urara
 
 Screenshot: 20251130185717_1
 ----------------------------------------
-  1st: [Unknown Character] - Wiesmak
-  2nd: [Unknown Character] - [Unknown Player]
-  3rd: [Unknown Character] - [Unknown Player]
-  4th: [Unknown Character] - [Unknown Player]
-  5th: [Unknown Character] - [Unknown Player]
-  6th: [Unknown Character] - jonxbomes
-  7th: [Unknown Character] - Yuma
+  [Unknown Position]: [Unknown Character] - Wiesmak
+  [Unknown Position]: [Unknown Character] - [Unknown Player]
+  [Unknown Position]: [Unknown Character] - [Unknown Player]
+  [Unknown Position]: [Unknown Character] - [Unknown Player]
+  [Unknown Position]: [Unknown Character] - [Unknown Player]
+  [Unknown Position]: [Unknown Character] - jonxbomes
+  [Unknown Position]: [Unknown Character] - Yuma
 
 ==================================================
 Total entries processed: 21

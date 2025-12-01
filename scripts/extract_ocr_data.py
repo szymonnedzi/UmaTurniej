@@ -272,17 +272,11 @@ def process_cropped_images(cropped_dir: Path) -> list[dict]:
         # Extract text data (including OCR-detected position)
         text_data = extract_text_from_image(image_path)
 
-        # Use OCR-detected position if available, otherwise fall back to entry number
+        # Use OCR-detected position only - no fallback to entry number
         position = text_data.get("position")
-        if position is None:
-            position = get_ordinal(entry_num)
-            position_source = "filename"
-        else:
-            position_source = "OCR"
 
         result = {
             "position": position,
-            "position_source": position_source,
             "character": text_data["character"],
             "player": text_data["player"],
             "source_file": image_path.name,
@@ -322,7 +316,7 @@ def format_results(results: list[dict]) -> str:
             lines.append("-" * 40)
             current_screenshot = base_name
 
-        position = result["position"]
+        position = result["position"] or "[Unknown Position]"
         character = result["character"] or "[Unknown Character]"
         player = result["player"] or "[Unknown Player]"
 
