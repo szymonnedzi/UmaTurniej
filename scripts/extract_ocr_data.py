@@ -276,9 +276,13 @@ def main() -> None:
         print(f"Error: Cropped directory not found: {cropped_dir}")
         return
 
-    # Find all cropped images
-    image_count = len(list(cropped_dir.glob("*.png"))) - 1  # Exclude .gitkeep
-    if image_count <= 0:
+    # Find all cropped images (excluding .gitkeep and other non-image files)
+    image_files = [
+        f for f in cropped_dir.glob("*.png")
+        if f.name != ".gitkeep" and not f.name.startswith(".")
+    ]
+    image_count = len(image_files)
+    if image_count == 0:
         print(f"No cropped images found in {cropped_dir}")
         print("Run scripts/process_screenshots.py first to generate cropped images.")
         return
