@@ -12,6 +12,22 @@ Screenshot processing tool for Uma Musume Tournament - subdivides race screensho
 
 ## Installation
 
+### Option 1: Using Docker (Recommended)
+
+Docker provides a containerized environment with all dependencies pre-installed.
+
+**Prerequisites**: Docker must be installed on your system.
+
+```bash
+# Build the Docker image
+docker build -t umaturniej .
+
+# Or use Docker Compose (recommended)
+docker compose build
+```
+
+### Option 2: Local Installation
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -26,6 +42,36 @@ brew install tesseract
 ```
 
 ## Usage
+
+### Using Docker
+
+#### With Docker Compose (recommended)
+
+1. Place race screenshots in the project root directory
+2. Extract snippets from screenshots:
+   ```bash
+   docker compose run --rm umaturniej python screenshot_processing/process_screenshots.py
+   ```
+3. Extract race data using OCR:
+   ```bash
+   docker compose run --rm umaturniej python ocr_extraction/extract_ocr_data.py
+   ```
+4. Results will be saved to `race_results.txt` and snippets to `screenshots/cropped/`
+
+#### With Docker CLI
+
+1. Place race screenshots in the project root directory
+2. Run the processing script:
+   ```bash
+   docker run --rm -v $(pwd):/app umaturniej python screenshot_processing/process_screenshots.py
+   ```
+3. Run the OCR extraction script:
+   ```bash
+   docker run --rm -v $(pwd):/app umaturniej python ocr_extraction/extract_ocr_data.py
+   ```
+4. Results will be saved to `race_results.txt` and snippets to `screenshots/cropped/`
+
+### Using Local Installation
 
 ### Step 1: Extract Snippets from Screenshots
 
@@ -60,7 +106,11 @@ UmaTurniej/
 │   └── process_screenshots.py # Snippet extraction script
 ├── ocr_extraction/
 │   └── extract_ocr_data.py    # OCR data extraction script
-├── requirements.txt
+├── Dockerfile                 # Docker container configuration
+├── docker-compose.yml         # Docker Compose service definition
+├── .dockerignore              # Files to exclude from Docker image
+├── requirements.txt           # Python dependencies
+├── main.py                    # Main application entry point
 └── README.md
 ```
 

@@ -1,0 +1,13 @@
+services:
+  umaturniej:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: umaturniej:latest
+    container_name: umaturniej
+    volumes:
+      # Mount the entire project directory to access screenshots and save results
+      - .:/app
+    working_dir: /app
+    # Override default command if needed
+    # command: python scripts/process_screenshots.py
