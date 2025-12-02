@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  umaturniej:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: umaturniej:latest
+    container_name: umaturniej
+    volumes:
+      # Mount the screenshots directory to persist cropped images
+      - ./screenshots:/app/screenshots
+      # Mount race results output
+      - ./race_results.txt:/app/race_results.txt
+      # Mount screenshot files from host
+      - ./*.jpg:/app/
+      - ./*.png:/app/
+    # Override default command if needed
+    # command: python scripts/process_screenshots.py

@@ -12,6 +12,22 @@ Screenshot processing tool for Uma Musume Tournament - subdivides race screensho
 
 ## Installation
 
+### Option 1: Using Docker (Recommended)
+
+Docker provides a containerized environment with all dependencies pre-installed.
+
+**Prerequisites**: Docker must be installed on your system.
+
+```bash
+# Build the Docker image
+docker build -t umaturniej .
+
+# Or use Docker Compose
+docker-compose build
+```
+
+### Option 2: Local Installation
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -26,6 +42,28 @@ brew install tesseract
 ```
 
 ## Usage
+
+### Using Docker
+
+#### Step 1: Extract Snippets from Screenshots
+
+1. Place race screenshots in the project root directory
+2. Run the processing script:
+   ```bash
+   docker run --rm -v $(pwd)/screenshots:/app/screenshots umaturniej python scripts/process_screenshots.py
+   ```
+3. Extracted snippets will be saved to `screenshots/cropped/`
+
+#### Step 2: Extract Race Data using OCR
+
+1. Ensure cropped snippets exist in `screenshots/cropped/`
+2. Run the OCR extraction script:
+   ```bash
+   docker run --rm -v $(pwd)/screenshots:/app/screenshots -v $(pwd)/race_results.txt:/app/race_results.txt umaturniej python scripts/extract_ocr_data.py
+   ```
+3. Results will be saved to `race_results.txt`
+
+### Using Local Installation
 
 ### Step 1: Extract Snippets from Screenshots
 
