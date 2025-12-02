@@ -38,3 +38,7 @@ Thumbs.db
 
 # Uploaded screenshots
 screenshots/uploads/
+
+# Cropped screenshots (intermediate processing files)
+screenshots/cropped/*.png
+screenshots/cropped/*.jpg
