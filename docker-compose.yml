@@ -9,5 +9,5 @@ services:
       # Mount the entire project directory to access screenshots and save results
       - .:/app
     working_dir: /app
-    # Override default command if needed
-    # command: python scripts/process_screenshots.py
+    # Override default command if needed (use the unified workflow)
+    # command: python main.py
