@@ -166,6 +166,7 @@ Alternatively, you can run each step separately:
 UmaTurniej/
 ├── app.py                     # Flask API application
 ├── main.py                    # Main entry point (unified workflow or API launcher)
+├── test_extract_ocr_data.py   # Comprehensive tests for text extraction
 ├── *.jpg                      # Place your race screenshots here for processing
 ├── test/
 │   └── test_input/            # Starter test screenshots (sample data)
@@ -213,3 +214,30 @@ Each source screenshot produces 7 individual entry snippet images in `screenshot
 - `{screenshot_name}_entry_7.png`
 
 **Note**: OCR extraction is best-effort and may have inaccuracies depending on image quality.
+
+## Testing
+
+The project includes comprehensive tests for the text extraction functionality.
+
+### Running Tests
+
+```bash
+# Install test dependencies (if not already installed)
+pip install -r requirements.txt
+
+# Run all tests
+pytest test_extract_ocr_data.py -v
+
+# Or run tests directly
+python test_extract_ocr_data.py
+```
+
+### Test Coverage
+
+The test suite covers:
+- **Ordinal conversion**: Converting numbers to ordinal strings (1st, 2nd, 3rd, etc.)
+- **Filename parsing**: Extracting entry numbers from cropped image filenames
+- **Result formatting**: Formatting extraction results as text reports
+- **Position detection**: OCR-based position extraction from race entry images
+- **Text extraction**: OCR-based character and player name extraction
+- **Integration tests**: End-to-end tests using real screenshot samples
