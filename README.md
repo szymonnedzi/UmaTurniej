@@ -9,6 +9,7 @@ Screenshot processing tool for Uma Musume Tournament - subdivides race screensho
 - Saves snippets to `/screenshots/cropped/` for later OCR processing
 - **OCR extraction**: Extracts position, character name, and player name from cropped snippets
 - Outputs race results to a text file (`race_results.txt`)
+- **Flask API**: Upload screenshots via REST API and get extraction results instantly
 
 ## Installation
 
@@ -43,6 +44,36 @@ brew install tesseract
 
 ## Usage
 
+### Option 1: Flask API (Recommended for Docker)
+
+The Flask API provides a simple REST endpoint to upload screenshots and get extraction results.
+
+1. Start the API server:
+   ```bash
+   python main.py api
+   # Or directly:
+   python app.py
+   ```
+
+2. The API will be available at `http://localhost:5000`
+
+3. Upload a screenshot using curl:
+   ```bash
+   curl -X POST -F "file=@your_screenshot.jpg" http://localhost:5000/api/upload
+   ```
+
+4. Or use any HTTP client to POST to `/api/upload` with multipart/form-data
+
+**API Endpoints:**
+- `GET /` - API information and available endpoints
+- `GET /api/health` - Health check
+- `POST /api/upload` - Upload screenshot and get extraction results
+  - Accepts: `multipart/form-data` with `file` field
+  - Returns: JSON with extracted race data
+
+### Option 2: Command Line Scripts
+
+#### Step 1: Extract Snippets from Screenshots
 ### Using Docker
 
 #### With Docker Compose (recommended)
@@ -82,7 +113,7 @@ brew install tesseract
    ```
 3. Extracted snippets will be saved to `screenshots/cropped/`
 
-### Step 2: Extract Race Data using OCR
+#### Step 2: Extract Race Data using OCR
 
 1. Ensure cropped snippets exist in `screenshots/cropped/`
 2. Run the OCR extraction script:
@@ -95,12 +126,15 @@ brew install tesseract
 
 ```
 UmaTurniej/
+├── app.py                     # Flask API application
+├── main.py                    # Main entry point (API or CLI info)
 ├── *.jpg                      # Place your race screenshots here for processing
 ├── test/
 │   └── test_input/            # Starter test screenshots (sample data)
 │       └── *.jpg              # Example race screenshots for testing
 ├── race_results.txt           # OCR-extracted race results
 ├── screenshots/
+│   ├── uploads/               # API uploaded screenshots
 │   └── cropped/               # Extracted entry snippets
 ├── screenshot_processing/
 │   └── process_screenshots.py # Snippet extraction script
@@ -134,3 +168,33 @@ Screenshot: {screenshot_name}
 ```
 
 **Note**: OCR extraction is best-effort and may have inaccuracies depending on image quality.
+
+## Docker
+
+When running in a Docker container, the Flask API is the recommended approach:
+
+```dockerfile
+# Example Dockerfile usage
+FROM python:3.12-slim
+
+# Install Tesseract OCR
+RUN apt-get update && apt-get install -y tesseract-ocr && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Expose Flask port
+EXPOSE 5000
+
+# Run Flask API
+CMD ["python", "app.py"]
+```
+
+Then build and run:
+```bash
+docker build -t umaturniej .
+docker run -p 5000:5000 umaturniej
+```

@@ -6,3 +6,7 @@ Pillow>=10.0.0
 
 # OCR-based anchor detection (requires Tesseract-OCR system package)
 pytesseract>=0.3.10
+
+# Flask API
+Flask>=3.0.0
+Werkzeug>=3.0.0
