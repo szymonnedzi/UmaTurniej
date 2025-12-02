@@ -168,8 +168,12 @@ def extract_entry_snippets(image_path: Path, output_dir: Path) -> list[Path]:
     return extracted_paths
 
 
-def main() -> None:
-    """Main entry point for the screenshot processing script."""
+def main() -> Path | None:
+    """Main entry point for the screenshot processing script.
+    
+    Returns:
+        Path to the output directory if successful, None otherwise
+    """
     project_root = get_project_root()
     output_dir = project_root / "screenshots" / "cropped"
 
@@ -182,7 +186,7 @@ def main() -> None:
 
     if not screenshots:
         print(f"No image files found in {project_root}")
-        return
+        return None
 
     print(f"Found {len(screenshots)} screenshot(s) to process")
 
@@ -206,6 +210,8 @@ def main() -> None:
     print("\n" + "=" * 45)
     print(f"COMPLETE: Extracted {total_snippets} total snippets")
     print(f"Snippets saved to: {output_dir}")
+    
+    return output_dir
 
 
 if __name__ == "__main__":

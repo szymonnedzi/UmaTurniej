@@ -329,8 +329,12 @@ def format_results(results: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def main() -> None:
-    """Main entry point for the OCR extraction script."""
+def main() -> Path | None:
+    """Main entry point for the OCR extraction script.
+    
+    Returns:
+        Path to the output file if successful, None otherwise
+    """
     project_root = get_project_root()
     cropped_dir = project_root / "screenshots" / "cropped"
     output_file = project_root / "race_results.txt"
@@ -340,7 +344,7 @@ def main() -> None:
 
     if not cropped_dir.exists():
         print(f"Error: Cropped directory not found: {cropped_dir}")
-        return
+        return None
 
     # Find all cropped images (excluding .gitkeep and other non-image files)
     image_files = [
@@ -351,7 +355,7 @@ def main() -> None:
     if image_count == 0:
         print(f"No cropped images found in {cropped_dir}")
         print("Run scripts/process_screenshots.py first to generate cropped images.")
-        return
+        return None
 
     print(f"Found {image_count} cropped image(s) to process")
     print()
@@ -368,6 +372,8 @@ def main() -> None:
     print(output_text)
     print()
     print(f"Results saved to: {output_file}")
+    
+    return output_file
 
 
 if __name__ == "__main__":

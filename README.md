@@ -27,7 +27,20 @@ brew install tesseract
 
 ## Usage
 
-### Step 1: Extract Snippets from Screenshots
+### Quick Start (Recommended)
+
+1. Place race screenshots in the project root directory
+2. Run the main script to process everything:
+   ```bash
+   python main.py
+   ```
+3. The processed table will be saved to `race_results.txt`
+
+### Manual Step-by-Step Processing
+
+Alternatively, you can run each step separately:
+
+#### Step 1: Extract Snippets from Screenshots
 
 1. Place race screenshots in the project root directory
 2. Run the processing script:
@@ -36,7 +49,7 @@ brew install tesseract
    ```
 3. Extracted snippets will be saved to `screenshots/cropped/`
 
-### Step 2: Extract Race Data using OCR
+#### Step 2: Extract Race Data using OCR
 
 1. Ensure cropped snippets exist in `screenshots/cropped/`
 2. Run the OCR extraction script:
@@ -62,21 +75,29 @@ UmaTurniej/
 
 ## Output
 
-### Snippet Extraction
-Each source screenshot produces 7 individual entry snippet images:
-- `{screenshot_name}_entry_1.png`
-- `{screenshot_name}_entry_2.png`
-- ...
-- `{screenshot_name}_entry_7.png`
-
-### OCR Extraction
-The `race_results.txt` file contains extracted data in the format:
+### Processed Table (race_results.txt)
+After processing, you will receive a **`race_results.txt` file** containing the extracted race data in a formatted table:
 ```
+UmaTurniej Race Results - OCR Extraction
+==================================================
+
 Screenshot: {screenshot_name}
 ----------------------------------------
   1st: {character_name} - {player_name}
   2nd: {character_name} - {player_name}
   ...
+
+==================================================
+Total entries processed: {count}
 ```
+
+### Intermediate Files
+
+#### Snippet Extraction
+Each source screenshot produces 7 individual entry snippet images in `screenshots/cropped/`:
+- `{screenshot_name}_entry_1.png`
+- `{screenshot_name}_entry_2.png`
+- ...
+- `{screenshot_name}_entry_7.png`
 
 **Note**: OCR extraction is best-effort and may have inaccuracies depending on image quality.
