@@ -377,4 +377,6 @@ def main() -> Path | None:
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    result = main()
+    sys.exit(0 if result is not None else 1)
