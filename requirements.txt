@@ -13,3 +13,6 @@ Werkzeug>=3.0.0
 
 # OpenAPI 3.0 specification and Swagger UI
 flasgger>=0.9.7
+
+# Testing
+pytest>=7.4.0
