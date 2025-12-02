@@ -50,11 +50,11 @@ brew install tesseract
 1. Place race screenshots in the project root directory
 2. Extract snippets from screenshots:
    ```bash
-   docker compose run --rm umaturniej python scripts/process_screenshots.py
+   docker compose run --rm umaturniej python screenshot_processing/process_screenshots.py
    ```
 3. Extract race data using OCR:
    ```bash
-   docker compose run --rm umaturniej python scripts/extract_ocr_data.py
+   docker compose run --rm umaturniej python ocr_extraction/extract_ocr_data.py
    ```
 4. Results will be saved to `race_results.txt` and snippets to `screenshots/cropped/`
 
@@ -63,11 +63,11 @@ brew install tesseract
 1. Place race screenshots in the project root directory
 2. Run the processing script:
    ```bash
-   docker run --rm -v $(pwd):/app umaturniej python scripts/process_screenshots.py
+   docker run --rm -v $(pwd):/app umaturniej python screenshot_processing/process_screenshots.py
    ```
 3. Run the OCR extraction script:
    ```bash
-   docker run --rm -v $(pwd):/app umaturniej python scripts/extract_ocr_data.py
+   docker run --rm -v $(pwd):/app umaturniej python ocr_extraction/extract_ocr_data.py
    ```
 4. Results will be saved to `race_results.txt` and snippets to `screenshots/cropped/`
 
@@ -106,7 +106,11 @@ UmaTurniej/
 │   └── process_screenshots.py # Snippet extraction script
 ├── ocr_extraction/
 │   └── extract_ocr_data.py    # OCR data extraction script
-├── requirements.txt
+├── Dockerfile                 # Docker container configuration
+├── docker-compose.yml         # Docker Compose service definition
+├── .dockerignore              # Files to exclude from Docker image
+├── requirements.txt           # Python dependencies
+├── main.py                    # Main application entry point
 └── README.md
 ```
 
