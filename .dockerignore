@@ -44,6 +44,3 @@ Thumbs.db
 Dockerfile
 .dockerignore
 docker-compose.yml
-
-# Documentation (if not needed in container)
-README.md

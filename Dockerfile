@@ -18,6 +18,8 @@ RUN apt-get update && \
 COPY requirements.txt .
 
 # Install Python dependencies
+# Note: --trusted-host flags may be needed in restricted network environments
+# In production, these can be removed if your network allows SSL verification
 RUN pip install --no-cache-dir --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org -r requirements.txt
 
 # Copy application files

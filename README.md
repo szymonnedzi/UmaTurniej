@@ -22,8 +22,8 @@ Docker provides a containerized environment with all dependencies pre-installed.
 # Build the Docker image
 docker build -t umaturniej .
 
-# Or use Docker Compose
-docker-compose build
+# Or use Docker Compose (recommended)
+docker compose build
 ```
 
 ### Option 2: Local Installation
@@ -45,23 +45,31 @@ brew install tesseract
 
 ### Using Docker
 
-#### Step 1: Extract Snippets from Screenshots
+#### With Docker Compose (recommended)
+
+1. Place race screenshots in the project root directory
+2. Extract snippets from screenshots:
+   ```bash
+   docker compose run --rm umaturniej python scripts/process_screenshots.py
+   ```
+3. Extract race data using OCR:
+   ```bash
+   docker compose run --rm umaturniej python scripts/extract_ocr_data.py
+   ```
+4. Results will be saved to `race_results.txt` and snippets to `screenshots/cropped/`
+
+#### With Docker CLI
 
 1. Place race screenshots in the project root directory
 2. Run the processing script:
    ```bash
-   docker run --rm -v $(pwd)/screenshots:/app/screenshots umaturniej python scripts/process_screenshots.py
+   docker run --rm -v $(pwd):/app umaturniej python scripts/process_screenshots.py
    ```
-3. Extracted snippets will be saved to `screenshots/cropped/`
-
-#### Step 2: Extract Race Data using OCR
-
-1. Ensure cropped snippets exist in `screenshots/cropped/`
-2. Run the OCR extraction script:
+3. Run the OCR extraction script:
    ```bash
-   docker run --rm -v $(pwd)/screenshots:/app/screenshots -v $(pwd)/race_results.txt:/app/race_results.txt umaturniej python scripts/extract_ocr_data.py
+   docker run --rm -v $(pwd):/app umaturniej python scripts/extract_ocr_data.py
    ```
-3. Results will be saved to `race_results.txt`
+4. Results will be saved to `race_results.txt` and snippets to `screenshots/cropped/`
 
 ### Using Local Installation
 
