@@ -49,9 +49,10 @@ brew install tesseract
 
 ```
 UmaTurniej/
+├── *.jpg                      # Place your race screenshots here for processing
 ├── test/
-│   └── test_input/            # Test screenshots
-│       └── *.jpg              # Source race screenshots for testing
+│   └── test_input/            # Starter test screenshots (sample data)
+│       └── *.jpg              # Example race screenshots for testing
 ├── race_results.txt           # OCR-extracted race results
 ├── screenshots/
 │   └── cropped/               # Extracted entry snippets
