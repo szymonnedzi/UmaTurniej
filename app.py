@@ -4,8 +4,6 @@ UmaTurniej Flask API
 Provides REST API endpoints for uploading screenshots and extracting race data.
 """
 
-import os
-import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -14,7 +12,6 @@ from werkzeug.utils import secure_filename
 
 from ocr_extraction.extract_ocr_data import (
     extract_text_from_image,
-    format_results,
     parse_entry_number,
 )
 from screenshot_processing.process_screenshots import extract_entry_snippets
@@ -165,4 +162,4 @@ def internal_error(error: Any) -> tuple[dict[str, Any], int]:
 if __name__ == "__main__":
     # Run the Flask development server
     # For production, use a WSGI server like gunicorn
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
