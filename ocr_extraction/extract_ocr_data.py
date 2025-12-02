@@ -350,7 +350,7 @@ def main() -> None:
     image_count = len(image_files)
     if image_count == 0:
         print(f"No cropped images found in {cropped_dir}")
-        print("Run scripts/process_screenshots.py first to generate cropped images.")
+        print("Run screenshot_processing/process_screenshots.py first to generate cropped images.")
         return
 
     print(f"Found {image_count} cropped image(s) to process")
