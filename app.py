@@ -118,6 +118,9 @@ def index() -> dict[str, Any]:
                     /api/health:
                       type: string
                       example: GET - Health check endpoint
+                    /api/docs:
+                      type: string
+                      example: GET - OpenAPI/Swagger UI documentation
     """
     return jsonify({
         "name": "UmaTurniej API",
@@ -127,7 +130,7 @@ def index() -> dict[str, Any]:
             "/": "This help message",
             "/api/upload": "POST - Upload a screenshot and extract race data",
             "/api/health": "GET - Health check endpoint",
-            "/api/docs": "GET - OpenAPI/Swagger documentation"
+            "/api/docs": "GET - OpenAPI/Swagger UI documentation"
         }
     })
 
