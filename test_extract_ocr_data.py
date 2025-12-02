@@ -10,7 +10,6 @@ This test suite covers text extraction functions including:
 - OCR text extraction from images
 """
 
-import re
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
