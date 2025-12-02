@@ -108,7 +108,6 @@ Visit `http://localhost:5000/api/docs` in your browser to access the interactive
 - Try out API endpoints directly from the browser
 - Download the OpenAPI 3.0 specification
 
-### Option 2: Command Line Scripts
 ### Option 3: Manual Step-by-Step Processing
 
 Alternatively, you can run each step separately:
@@ -214,33 +213,3 @@ Each source screenshot produces 7 individual entry snippet images in `screenshot
 - `{screenshot_name}_entry_7.png`
 
 **Note**: OCR extraction is best-effort and may have inaccuracies depending on image quality.
-
-## Docker
-
-When running in a Docker container, the Flask API is the recommended approach:
-
-```dockerfile
-# Example Dockerfile usage
-FROM python:3.12-slim
-
-# Install Tesseract OCR
-RUN apt-get update && apt-get install -y tesseract-ocr && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-# Expose Flask port
-EXPOSE 5000
-
-# Run Flask API
-CMD ["python", "app.py"]
-```
-
-Then build and run:
-```bash
-docker build -t umaturniej .
-docker run -p 5000:5000 umaturniej
-```
