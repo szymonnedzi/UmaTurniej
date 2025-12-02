@@ -1,0 +1,35 @@
+UmaTurniej Race Results - OCR Extraction
+==================================================
+
+Screenshot: 20251130185703_1
+----------------------------------------
+  [Unknown Position]: Maruzensky - Kysix
+  [Unknown Position]: Haru - Sebaxd321
+  [Unknown Position]: [Unknown Character] - El Condor Pasa
+  [Unknown Position]: Smart - Harambe
+  [Unknown Position]: Taiki Shuttle - iStrzalka
+  6th: El Condor Pasa - Ayumu
+  7th: Smart Falcon - Bloc
+
+Screenshot: 20251130185712_1
+----------------------------------------
+  [Unknown Position]: Falcon Smart - Bloodvvolf
+  [Unknown Position]: Taiki Shuttle - FantomSG
+  [Unknown Position]: Haru Urara - Saachi Gi
+  [Unknown Position]: [Unknown Character] - Shutth
+  [Unknown Position]: [Unknown Character] - Oguri cop
+  12th: Oguri - Archer
+  [Unknown Position]: [Unknown Character] - Haru Urara
+
+Screenshot: 20251130185717_1
+----------------------------------------
+  [Unknown Position]: [Unknown Character] - Wiesmak
+  [Unknown Position]: [Unknown Character] - [Unknown Player]
+  [Unknown Position]: [Unknown Character] - [Unknown Player]
+  [Unknown Position]: [Unknown Character] - [Unknown Player]
+  [Unknown Position]: [Unknown Character] - [Unknown Player]
+  [Unknown Position]: [Unknown Character] - jonxbomes
+  [Unknown Position]: [Unknown Character] - Yuma
+
+==================================================
+Total entries processed: 21
