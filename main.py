@@ -71,10 +71,16 @@ def process_and_extract() -> Path | None:
     return output_file
 
 
-def main() -> None:
-    """Main entry point for the application."""
-    process_and_extract()
+def main() -> int:
+    """Main entry point for the application.
+    
+    Returns:
+        0 if successful, 1 if failed
+    """
+    result = process_and_extract()
+    return 0 if result is not None else 1
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    sys.exit(main())
