@@ -32,7 +32,7 @@ brew install tesseract
 1. Place race screenshots in the project root directory
 2. Run the processing script:
    ```bash
-   python scripts/process_screenshots.py
+   python screenshot_processing/process_screenshots.py
    ```
 3. Extracted snippets will be saved to `screenshots/cropped/`
 
@@ -41,7 +41,7 @@ brew install tesseract
 1. Ensure cropped snippets exist in `screenshots/cropped/`
 2. Run the OCR extraction script:
    ```bash
-   python scripts/extract_ocr_data.py
+   python ocr_extraction/extract_ocr_data.py
    ```
 3. Results will be saved to `race_results.txt`
 
@@ -49,12 +49,15 @@ brew install tesseract
 
 ```
 UmaTurniej/
-├── *.jpg                      # Source race screenshots
+├── test/
+│   └── test_input/            # Test screenshots
+│       └── *.jpg              # Source race screenshots for testing
 ├── race_results.txt           # OCR-extracted race results
 ├── screenshots/
 │   └── cropped/               # Extracted entry snippets
-├── scripts/
-│   ├── process_screenshots.py # Snippet extraction script
+├── screenshot_processing/
+│   └── process_screenshots.py # Snippet extraction script
+├── ocr_extraction/
 │   └── extract_ocr_data.py    # OCR data extraction script
 ├── requirements.txt
 └── README.md
