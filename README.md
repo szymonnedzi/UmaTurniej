@@ -1,14 +1,16 @@
 # UmaTurniej
 
-Screenshot processing tool for Uma Musume Tournament - subdivides race screenshots into individual entry snippets and extracts race result data using OCR.
+Screenshot processing tool for Uma Musume Tournament - subdivides race screenshots into individual entry snippets and extracts race result data using OCR. **The processed results are returned as a `.txt` file** for easy sharing and analysis.
 
 ## Features
 
+- **Unified workflow**: Process screenshots and extract data with a single command
 - Loads race screenshots (JPG/PNG) from the project root
 - Extracts 7 individual race entry snippets per screenshot
-- Saves snippets to `/screenshots/cropped/` for later OCR processing
+- Saves snippets to `/screenshots/cropped/` for later inspection
 - **OCR extraction**: Extracts position, character name, and player name from cropped snippets
-- Outputs race results to a text file (`race_results.txt`)
+- **Outputs race results to a `.txt` file** (`race_results.txt`) with formatted table layout
+- Error handling and validation throughout the processing pipeline
 
 ## Installation
 
@@ -29,12 +31,15 @@ brew install tesseract
 
 ### Quick Start (Recommended)
 
-1. Place race screenshots in the project root directory
+This is the easiest way to process screenshots and receive the results as a text file:
+
+1. Place race screenshots (JPG/PNG) in the project root directory
 2. Run the main script to process everything:
    ```bash
    python main.py
    ```
-3. The processed table will be saved to `race_results.txt`
+3. **The processed table will be saved to `race_results.txt`** in the project root
+4. The script will clearly display the location of the output file upon completion
 
 ### Manual Step-by-Step Processing
 
@@ -62,13 +67,14 @@ Alternatively, you can run each step separately:
 
 ```
 UmaTurniej/
+├── main.py                    # Main entry point (unified workflow)
 ├── *.jpg                      # Source race screenshots
-├── race_results.txt           # OCR-extracted race results
+├── race_results.txt           # OCR-extracted race results (OUTPUT)
 ├── screenshots/
-│   └── cropped/               # Extracted entry snippets
+│   └── cropped/               # Extracted entry snippets (intermediate)
 ├── scripts/
-│   ├── process_screenshots.py # Snippet extraction script
-│   └── extract_ocr_data.py    # OCR data extraction script
+│   ├── process_screenshots.py # Snippet extraction script (can run standalone)
+│   └── extract_ocr_data.py    # OCR data extraction script (can run standalone)
 ├── requirements.txt
 └── README.md
 ```
