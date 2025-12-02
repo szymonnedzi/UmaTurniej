@@ -4,6 +4,7 @@ Main entry point for the application.
 """
 
 import importlib.util
+import sys
 from pathlib import Path
 
 
@@ -76,10 +77,29 @@ def main() -> int:
     Returns:
         0 if successful, 1 if failed
     """
-    result = process_and_extract()
-    return 0 if result is not None else 1
+    if len(sys.argv) > 1 and sys.argv[1] == "api":
+        # Run Flask API server
+        from app import app
+        print("Starting UmaTurniej Flask API server...")
+        print("Server will be available at http://0.0.0.0:5000")
+        app.run(host="0.0.0.0", port=5000, debug=False)
+        return 0
+    elif len(sys.argv) > 1 and sys.argv[1] == "help":
+        # Show help
+        print("UmaTurniej - Screenshot Processing and OCR Application")
+        print("\nAvailable commands:")
+        print("  python main.py                  - Run unified workflow (process + extract)")
+        print("  python main.py api              - Start Flask API server")
+        print("  python main.py help             - Show this help message")
+        print("\nManual processing:")
+        print("  python screenshot_processing/process_screenshots.py - Extract snippets")
+        print("  python ocr_extraction/extract_ocr_data.py           - Extract OCR data")
+        return 0
+    else:
+        # Default: Run unified workflow
+        result = process_and_extract()
+        return 0 if result is not None else 1
 
 
 if __name__ == "__main__":
-    import sys
     sys.exit(main())
