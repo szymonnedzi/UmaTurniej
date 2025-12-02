@@ -10,3 +10,6 @@ pytesseract>=0.3.10
 # Flask API
 Flask>=3.0.0
 Werkzeug>=3.0.0
+
+# OpenAPI 3.0 specification and Swagger UI
+flasgger>=0.9.7

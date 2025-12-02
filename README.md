@@ -67,9 +67,19 @@ The Flask API provides a simple REST endpoint to upload screenshots and get extr
 **API Endpoints:**
 - `GET /` - API information and available endpoints
 - `GET /api/health` - Health check
+- `GET /api/docs` - OpenAPI 3.0 / Swagger UI documentation (interactive API explorer)
+- `GET /apispec.json` - OpenAPI 3.0 specification in JSON format
 - `POST /api/upload` - Upload screenshot and get extraction results
   - Accepts: `multipart/form-data` with `file` field
   - Returns: JSON with extracted race data
+
+**Interactive API Documentation:**
+
+Visit `http://localhost:5000/api/docs` in your browser to access the interactive Swagger UI documentation where you can:
+- View all available endpoints and their details
+- See request/response schemas
+- Try out API endpoints directly from the browser
+- Download the OpenAPI 3.0 specification
 
 ### Option 2: Command Line Scripts
 
