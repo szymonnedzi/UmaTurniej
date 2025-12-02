@@ -11,8 +11,25 @@ Screenshot processing tool for Uma Musume Tournament - subdivides race screensho
 - **OCR extraction**: Extracts position, character name, and player name from cropped snippets
 - **Outputs race results to a `.txt` file** (`race_results.txt`) with formatted table layout
 - Error handling and validation throughout the processing pipeline
+- Docker support for easy deployment
 
 ## Installation
+
+### Option 1: Using Docker (Recommended)
+
+Docker provides a containerized environment with all dependencies pre-installed.
+
+**Prerequisites**: Docker must be installed on your system.
+
+```bash
+# Build the Docker image
+docker build -t umaturniej .
+
+# Or use Docker Compose (recommended)
+docker compose build
+```
+
+### Option 2: Local Installation
 
 ```bash
 pip install -r requirements.txt
@@ -29,9 +46,11 @@ brew install tesseract
 
 ## Usage
 
-### Quick Start (Recommended)
+### Quick Start - Unified Workflow (Recommended)
 
 This is the easiest way to process screenshots and receive the results as a text file:
+
+#### With Local Installation
 
 1. Place race screenshots (JPG/PNG) in the project root directory
 2. Run the main script to process everything:
@@ -41,25 +60,65 @@ This is the easiest way to process screenshots and receive the results as a text
 3. **The processed table will be saved to `race_results.txt`** in the project root
 4. The script will clearly display the location of the output file upon completion
 
+#### With Docker
+
+```bash
+# Using Docker Compose
+docker compose run --rm umaturniej python main.py
+
+# Or using Docker CLI
+docker run --rm -v $(pwd):/app umaturniej python main.py
+```
+
 ### Manual Step-by-Step Processing
 
 Alternatively, you can run each step separately:
 
-#### Step 1: Extract Snippets from Screenshots
+#### Using Docker
+
+**With Docker Compose (recommended)**
+
+1. Place race screenshots in the project root directory
+2. Extract snippets from screenshots:
+   ```bash
+   docker compose run --rm umaturniej python screenshot_processing/process_screenshots.py
+   ```
+3. Extract race data using OCR:
+   ```bash
+   docker compose run --rm umaturniej python ocr_extraction/extract_ocr_data.py
+   ```
+4. Results will be saved to `race_results.txt` and snippets to `screenshots/cropped/`
+
+**With Docker CLI**
 
 1. Place race screenshots in the project root directory
 2. Run the processing script:
    ```bash
-   python scripts/process_screenshots.py
+   docker run --rm -v $(pwd):/app umaturniej python screenshot_processing/process_screenshots.py
+   ```
+3. Run the OCR extraction script:
+   ```bash
+   docker run --rm -v $(pwd):/app umaturniej python ocr_extraction/extract_ocr_data.py
+   ```
+4. Results will be saved to `race_results.txt` and snippets to `screenshots/cropped/`
+
+#### Using Local Installation
+
+**Step 1: Extract Snippets from Screenshots**
+
+1. Place race screenshots in the project root directory
+2. Run the processing script:
+   ```bash
+   python screenshot_processing/process_screenshots.py
    ```
 3. Extracted snippets will be saved to `screenshots/cropped/`
 
-#### Step 2: Extract Race Data using OCR
+**Step 2: Extract Race Data using OCR**
 
 1. Ensure cropped snippets exist in `screenshots/cropped/`
 2. Run the OCR extraction script:
    ```bash
-   python scripts/extract_ocr_data.py
+   python ocr_extraction/extract_ocr_data.py
    ```
 3. Results will be saved to `race_results.txt`
 
@@ -68,14 +127,21 @@ Alternatively, you can run each step separately:
 ```
 UmaTurniej/
 ├── main.py                    # Main entry point (unified workflow)
-├── *.jpg                      # Source race screenshots
+├── *.jpg                      # Place your race screenshots here for processing
+├── test/
+│   └── test_input/            # Starter test screenshots (sample data)
+│       └── *.jpg              # Example race screenshots for testing
 ├── race_results.txt           # OCR-extracted race results (OUTPUT)
 ├── screenshots/
 │   └── cropped/               # Extracted entry snippets (intermediate)
-├── scripts/
-│   ├── process_screenshots.py # Snippet extraction script (can run standalone)
+├── screenshot_processing/
+│   └── process_screenshots.py # Snippet extraction script (can run standalone)
+├── ocr_extraction/
 │   └── extract_ocr_data.py    # OCR data extraction script (can run standalone)
-├── requirements.txt
+├── Dockerfile                 # Docker container configuration
+├── docker-compose.yml         # Docker Compose service definition
+├── .dockerignore              # Files to exclude from Docker image
+├── requirements.txt           # Python dependencies
 └── README.md
 ```
 

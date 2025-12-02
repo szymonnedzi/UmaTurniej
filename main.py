@@ -30,16 +30,15 @@ def process_and_extract() -> Path | None:
     print()
     
     project_root = Path(__file__).parent
-    scripts_dir = project_root / "scripts"
     
-    # Load the script modules dynamically
+    # Load the script modules dynamically from their new locations
     process_screenshots = _load_module_from_path(
         "process_screenshots",
-        scripts_dir / "process_screenshots.py"
+        project_root / "screenshot_processing" / "process_screenshots.py"
     )
     extract_ocr_data = _load_module_from_path(
         "extract_ocr_data",
-        scripts_dir / "extract_ocr_data.py"
+        project_root / "ocr_extraction" / "extract_ocr_data.py"
     )
     
     # Step 1: Process screenshots into cropped snippets
